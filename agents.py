@@ -6,6 +6,17 @@ from pathlib import Path
 from dotenv import load_dotenv
 load_dotenv(dotenv_path=Path(__file__).with_name(".env"))
 DEFAULT_GEMINI_MODEL = "gemini-2.5-flash"
+
+def _config_value(name: str, default: str = "") -> str:
+    value = os.getenv(name, "").strip()
+    if value:
+        return value
+    try:
+        import streamlit as st
+        return str(st.secrets.get(name, default)).strip()
+    except Exception:
+        return default
+
 class GeminiConfigurationError(RuntimeError): pass
 def _env_int(name: str, default: int) -> int:
     try: return int(os.getenv(name, str(default)))
@@ -15,9 +26,9 @@ def _env_float(name: str, default: float) -> float:
     except ValueError: return default
 @lru_cache(maxsize=1)
 def get_llm():
-    key = os.getenv("GOOGLE_API_KEY", "").strip()
+    key = _config_value("GOOGLE_API_KEY")
     if not key: raise GeminiConfigurationError("Gemini API key is missing. Add GOOGLE_API_KEY to .env.")
-    model = os.getenv("GEMINI_MODEL", DEFAULT_GEMINI_MODEL).strip()
+    model = _config_value("GEMINI_MODEL", DEFAULT_GEMINI_MODEL)
     if not model: raise GeminiConfigurationError("Gemini model is missing. Add GEMINI_MODEL to .env.")
     from langchain_google_genai import ChatGoogleGenerativeAI
     return ChatGoogleGenerativeAI(model=model, api_key=key, temperature=_env_float("GEMINI_TEMPERATURE", 0.0), max_tokens=_env_int("GEMINI_MAX_OUTPUT_TOKENS", 1200), request_timeout=_env_int("GEMINI_TIMEOUT", 30), retries=0)
