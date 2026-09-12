@@ -1,0 +1,30 @@
+# LangChain
+langchain
+langchain-core
+langgraph
+
+# OpenAI-compatible interface
+langchain-openai
+openai
+langchain-groq
+
+# Hugging Face
+huggingface_hub
+
+# Tavily
+langchain-tavily
+tavily-python
+
+# BeautifulSoup
+beautifulsoup4
+requests
+lxml
+
+# Environment variables
+python-dotenv
+
+# Data validation
+pydantic
+
+# UI
+streamlit

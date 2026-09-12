@@ -1,0 +1,137 @@
+{
+    'query': 'what are the recent news of war?',
+    'follow_up_questions': None,
+    'answer': None,
+    'images': [],
+    'results': [
+        {
+            'url': 'https://www.bbc.com/news/topics/cx2jyv8j8gwt',
+            'title': 'US-Israel war with Iran | Latest News and Updates - BBC',
+            'content': "Ships unload their cargo at the port of Yemen's 
+Huthi-held city of Hodeida on July 28, 2024\n\n## Projectile sinks 
+Indian-flagged ship off Yemen coast\n\nAll 14 people on board the 
+Indian-flagged vessel were safely rescued, India's ministry of external affairs
+says.\n\nVessels in the Strait of Hormuz, as seen from the Musandam Peninsula, 
+Oman (3 August 2026)\n\n## Qatar says US-Iran mediation efforts continuing but 
+no direct talks planned [...] US Secretary of State Marco Rubio and Treasury 
+Secretary Scott Bessent both announced talks had progressed to allow shipments 
+to resume.\n\nShips unload their cargo at the port of Yemen's Huthi-held city 
+of Hodeida on July 28, 2024\n\n## Projectile sinks Indian-flagged ship off 
+Yemen coast\n\nAll 14 people on board the Indian-flagged vessel were safely 
+rescued, India's ministry of external affairs says.\n\nVessels in the Strait of
+Hormuz, as seen from the Musandam Peninsula, Oman (3 August 2026) [...] ## Lyse
+Doucet: Most Iranians don't expect this truce to last\n\nThe BBC's Lyse Doucet 
+reports from Tehran as tensions continue over the Strait of Hormuz.\n\nPetrol 
+drips out of a fuel hose at a petrol station in Saint-Etienne-de-Montluc, 
+western France, on 15 April, 2026.\n\n## Oil prices rise after Trump says 
+Iranian ship seized\n\nEnergy markets have seen wild swings since the US and 
+Israel attacked Iran on 28 February.\n\n## Latest news",
+            'score': 0.49113917,
+            'raw_content': None,
+            'id': 'ebd000-00'
+        },
+        {
+            'url': 'https://www.cbsnews.com/us-iran-tensions',
+            'title': 'Latest news on the U.S.-Israeli war with Iran',
+            'content': "The U.S. moves more refueling planes to the Mideast and
+adds medics at a major military hospital as the war with Iran spreads to 
+another key waterway.\n\n Jul 24\n\nBRITAIN-IRAN-US-ISRAEL-WAR \n\n#### Rapid 
+pace of interceptor and precision-guided weapons use worries Trump 
+admin.\n\nThe U.S. defense industrial base isn't equipped to produce missiles 
+rapidly enough to replenish munitions used in the war with Iran, or transferred
+for use to Central Command.\n\n Jul 23\n\nShow More\n\n### World [...] Aug 
+7\n\nPresident Trump Hosts Cabinet Meeting At Camp David \n\n#### Trump denies 
+U.S. running low on some munitions, says vast resupplies being 
+made\n\nPresident Trump is taking issue with recent reports of significant U.S.
+munitions shortages due to the war with Iran.\n\n Aug 6\n\nAftermath of the 
+Iranian drone attack in Kuwait \n\n#### Senator pushes DoD to release probe of 
+Iranian attack that killed 6 U.S. troops [...] Aug 
+5\n\nUS-JAPAN-SPACE-MOON-FIREFLY-ISPACE \n\n#### SpaceX rocket booster slams 
+into moon, creating crater that could be 16 feet deep\n\nThe impact wasn't 
+visible to the naked eye, but photos are expected to come from a lunar 
+satellite at a later time.\n\n Aug 5\n\n072626-undock1.jpg \n\n#### Russian 
+Soyuz brings three home after 8 months at space station\n\nThe Soyuz MS-28 
+landing in Kazakhstan brought a 241-day stay in space to a successful 
+conclusion.\n\n Jul 26\n\nSpaceX Starship Launch",
+            'score': 0.487918,
+            'raw_content': None,
+            'id': '009d84-01'
+        },
+        {
+            'url': 
+'https://news.sky.com/story/iran-war-latest-strait-of-hormuz-trump-oman-tehran-
+yemen-13509565',
+            'title': 'Trump insists war has not caused weapons shortages for US
+- and ...',
+            'content': 'In the Red Sea, six Saudi-flagged supertankers changed 
+course in the Gulf of Aden recently \u2060for southern Africa, while two 
+tankers laden with Saudi oil \u200bcrossed the Bab el-Mandeb Strait, data 
+showed on Monday.\n\nThe Saudis led an international coalition and imposed an 
+air and sea blockade against the rebels after they seized the capital, Sanaa, 
+and much of northern Yemen in a civil war that began in 2014. Major fighting 
+ended in a truce in 2022. [...] Ship sunk off Yemen:An Indian-flagged ship has 
+capsized and sunk near Yemeni waters after being hit by a projectile, according
+to Indian officials. Details were unclear, but the Iran-aligned Houthis in 
+Yemen recently announced a blockade on Saudi-linked shipping passing through 
+the Bab el-Mandeb Strait that leads to the Red Sea.\n\nShare on FacebookShare 
+on XShare by emailCopy link\n\nClose post\n\n7 hour ago 7h ago 18:33\n\n## 
+Iran: Strait of Hormuz negotiations with Oman are advancing [...] The militant 
+group declared a maritime embargo against Saudi Arabia on 20 July, opening 
+\u200ba new front against the US and its allies in \u200cthe Iran war and 
+expanding attacks on tankers carrying global energy and other supplies to 
+waters beyond \u200bthe Gulf.\n\nTwenty vessels - 12 tankers and eight bulk 
+carriers - passed through the Bab el-Mandeb \u200bStrait on Monday, shipping 
+data showed, \u200clargely unchanged from the previous day.',
+            'score': 0.45333505,
+            'raw_content': None,
+            'id': '4e3cb7-02'
+        },
+        {
+            'url': 'https://www.nbcnews.com/world/iran-war',
+            'title': 'Iran War: Latest News, Live Coverage and Video',
+            'content': "## Middle East Conflict\n\nFORSUBSCRIBERS\n\n## 
+U.S.-brokered plan offers little relief for Lebanese displaced by Israel∆s 
+offensive\n\nÙThere is no infrastructure left. No water. No electricity. 
+Nothing,ˆ one father of three said of his neighborhood after returning.\n\n4d 
+ago\n\n## Iran war\n\n## Iran war\n\n## U.S. agrees to pause attacks on Iran 
+subject to Êrapidly∆ making deal, Trump says\n\nThe deal would include 
+reopening the Strait of Hormuz and ending Tehran∆s Ùnuclear threat,ˆ the 
+president said. [...] ## Iran war\n\n## Hackers targeted municipal water 
+systems in 7 states this week, FBI says\n\nThe federal warning comes after more
+than 30 water facilities in Minnesota were breached.\n\n4d ago\n\n## Iran 
+war\n\n## Iran war\n\n## Trump calls Iranian leadership Êextremely duplicitous∆
+after Tehran denies new talks will start Monday\n\nIran said it wasn∆t holding 
+talks with the U.S. but was in discussions with Oman over a temporary safe 
+route through the Strait of Hormuz.\n\n4d ago\n\n## Middle East Conflict [...] 
+02:14\n\nVideo captures Iranian strikes on air base in Jordan\n\n00:36\n\nThe 
+U.S. and Iran exchange more attacks as tension rises\n\n00:33\n\nIran has 
+closed Strait of Hormuz, state media reports\n\n00:15\n\nTrump criticizes 
+Netanyahu amid Israeli strikes\n\n00:35\n\nU.S. military boards an 
+Iranian-flagged oil tanker\n\n00:18\n\nVideo shows U.S. enforcing Strait of 
+Hormuz blockade\n\n00:14\n\nTrump: Ceasefire with Iran is 'on massive life 
+support'\n\n00:29\n\nTrump says ceasefire with Iran is 'on massive life 
+support'",
+            'score': 0.34541488,
+            'raw_content': None,
+            'id': '248f84-03'
+        },
+        {
+            'url': 'https://www.war.gov/news',
+            'title': 'News | U.S. Department of War',
+            'content': "Official websites use .gov\n\nSecure .gov websites use 
+HTTPS\n\nLogo for U.S. Department of War\n\n# News\n\nStories from around the 
+Defense Department.\n\n## Latest News\n\n## Search\n\n## Stay 
+Updated\n\nSubscribe now to get War.gov products delivered to your 
+inbox.\n\n### Department of War\n\n### Helpful Links\n\n### Resources\n\n### 
+Popular\n\nU.S. Department of War Logo\n\nThe Department of War provides the 
+military forces needed to deter war and ensure our nation's security. [...] 
+Veterans Crisis Line number. Dial 988 then Press 1\nVeterans Crisis Line 
+number. Dial 988 then Press 1",
+            'score': 0.34263802,
+            'raw_content': None,
+            'id': '420716-04'
+        }
+    ],
+    'response_time': 0.0,
+    'request_id': '0c14154d-f11f-450c-ae28-d7b089289571'
+}
