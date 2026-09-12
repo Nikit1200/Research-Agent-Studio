@@ -27,7 +27,7 @@ def _env_float(name: str, default: float) -> float:
 @lru_cache(maxsize=1)
 def get_llm():
     key = _config_value("GOOGLE_API_KEY")
-    if not key: raise GeminiConfigurationError("Gemini API key is missing. Add GOOGLE_API_KEY to .env.")
+    if not key: raise GeminiConfigurationError("Gemini API key is missing. Add GOOGLE_API_KEY to Streamlit Cloud Secrets, then reboot the app.")
     model = _config_value("GEMINI_MODEL", DEFAULT_GEMINI_MODEL)
     if not model: raise GeminiConfigurationError("Gemini model is missing. Add GEMINI_MODEL to .env.")
     from langchain_google_genai import ChatGoogleGenerativeAI
