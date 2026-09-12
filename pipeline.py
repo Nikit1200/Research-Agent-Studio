@@ -2,24 +2,24 @@
 from __future__ import annotations
 import random, time
 from typing import Any, Callable
-from agents import GroqConfigurationError, get_critic_chain, get_writer_chain
+from agents import GeminiConfigurationError, get_critic_chain, get_writer_chain
 from tools import ResearchServiceError, research_search, scrape_url
 ProgressCallback = Callable[[str, str, str], None]
 class PipelineStageError(RuntimeError):
     def __init__(self, stage: str, message: str): super().__init__(message); self.stage = stage
 def _compact(value: str, limit: int) -> str:
     value = str(value).strip(); return value[:limit].rstrip() + ("\n[Truncated]" if len(value) > limit else "")
-def _invoke_groq(runnable: Any, payload: dict[str, Any]) -> str:
+def _invoke_gemini(runnable: Any, payload: dict[str, Any]) -> str:
     for attempt in range(3):
         try: return str(runnable.invoke(payload))
         except Exception as exc:
             text = str(exc).lower()
-            if any(x in text for x in ("401", "authentication", "invalid api key")): raise PipelineStageError("Groq", "Groq authentication failed. Check GROQ_API_KEY.") from exc
-            if "model" in text and any(x in text for x in ("not found", "404", "decommissioned")): raise PipelineStageError("Groq", "Groq model is unavailable. Check GROQ_MODEL.") from exc
+            if any(x in text for x in ("401", "403", "authentication", "invalid api key", "api key not valid")): raise PipelineStageError("Gemini", "Gemini authentication failed. Check GOOGLE_API_KEY.") from exc
+            if "model" in text and any(x in text for x in ("not found", "404", "not supported", "unavailable")): raise PipelineStageError("Gemini", "Gemini model is unavailable. Check GEMINI_MODEL.") from exc
             transient = any(x in text for x in ("429", "rate limit", "timeout", "connection", "remote disconnected", "503", "502"))
             if not transient or attempt == 2:
-                if "quota" in text or "tokens per day" in text: raise PipelineStageError("Groq", "Groq quota reached. Wait for reset or change plan.") from exc
-                raise PipelineStageError("Groq", "Groq request failed. Please retry shortly.") from exc
+                if "quota" in text or "resource exhausted" in text or "tokens per day" in text: raise PipelineStageError("Gemini", "Gemini quota or rate limit reached. Please try again later.") from exc
+                raise PipelineStageError("Gemini", "Gemini request failed. Please retry shortly.") from exc
             time.sleep(min(8, 2 ** attempt + random.random()))
     raise AssertionError("unreachable")
 def _format_sources(sources: list[dict[str, Any]]) -> str:
@@ -46,13 +46,13 @@ def run_research_pipeline(topic: str, progress: ProgressCallback | None = None) 
     state["scraped_content"] = _compact(web_text or "Reader used research API abstracts and metadata; no webpage scrape was required.", 1800)
     state["reader_notes"] = _format_sources(ranked[:3]); update("Reader Agent", "complete", "Selected the most relevant structured sources.")
     update("Writer Agent", "running", "Drafting a sourced research report.")
-    try: state["report"] = _invoke_groq(get_writer_chain(), {"topic": topic, "research": _compact(state["reader_notes"], 4500)})
-    except (GroqConfigurationError, PipelineStageError) as exc:
+    try: state["report"] = _invoke_gemini(get_writer_chain(), {"topic": topic, "research": _compact(state["reader_notes"], 4500)})
+    except (GeminiConfigurationError, PipelineStageError) as exc:
         update("Writer Agent", "error", str(exc)); raise PipelineStageError("Writer Agent", str(exc)) from exc
     update("Writer Agent", "complete", "Drafted report.")
     update("Critic Agent", "running", "Checking the report for clarity and citation quality.")
-    try: state["feedback"] = _invoke_groq(get_critic_chain(), {"report": _compact(state["report"], 7000)})
-    except (GroqConfigurationError, PipelineStageError) as exc:
+    try: state["feedback"] = _invoke_gemini(get_critic_chain(), {"report": _compact(state["report"], 7000)})
+    except (GeminiConfigurationError, PipelineStageError) as exc:
         update("Critic Agent", "error", str(exc)); raise PipelineStageError("Critic Agent", str(exc)) from exc
     update("Critic Agent", "complete", "Completed quality review.")
     return state

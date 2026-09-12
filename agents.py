@@ -1,18 +1,26 @@
-"""Groq-backed writer and critic chains for the research pipeline."""
+"""Gemini-backed writer and critic chains for the research pipeline."""
 from __future__ import annotations
+from functools import lru_cache
 import os
+from pathlib import Path
 from dotenv import load_dotenv
-load_dotenv()
-DEFAULT_GROQ_MODEL = "openai/gpt-oss-20b"
-class GroqConfigurationError(RuntimeError): pass
+load_dotenv(dotenv_path=Path(__file__).with_name(".env"))
+DEFAULT_GEMINI_MODEL = "gemini-2.5-flash"
+class GeminiConfigurationError(RuntimeError): pass
 def _env_int(name: str, default: int) -> int:
     try: return int(os.getenv(name, str(default)))
     except ValueError: return default
+def _env_float(name: str, default: float) -> float:
+    try: return float(os.getenv(name, str(default)))
+    except ValueError: return default
+@lru_cache(maxsize=1)
 def get_llm():
-    key = os.getenv("GROQ_API_KEY", "").strip()
-    if not key: raise GroqConfigurationError("Groq API key missing. Add GROQ_API_KEY to .env.")
-    from langchain_groq import ChatGroq
-    return ChatGroq(model=os.getenv("GROQ_MODEL", DEFAULT_GROQ_MODEL), api_key=key, temperature=float(os.getenv("GROQ_TEMPERATURE", "0.2")), max_tokens=_env_int("GROQ_MAX_TOKENS", 700), timeout=_env_int("GROQ_TIMEOUT", 30), max_retries=0)
+    key = os.getenv("GOOGLE_API_KEY", "").strip()
+    if not key: raise GeminiConfigurationError("Gemini API key is missing. Add GOOGLE_API_KEY to .env.")
+    model = os.getenv("GEMINI_MODEL", DEFAULT_GEMINI_MODEL).strip()
+    if not model: raise GeminiConfigurationError("Gemini model is missing. Add GEMINI_MODEL to .env.")
+    from langchain_google_genai import ChatGoogleGenerativeAI
+    return ChatGoogleGenerativeAI(model=model, api_key=key, temperature=_env_float("GEMINI_TEMPERATURE", 0.0), max_tokens=_env_int("GEMINI_MAX_OUTPUT_TOKENS", 1200), request_timeout=_env_int("GEMINI_TIMEOUT", 30), retries=0)
 def get_writer_chain():
     from langchain_core.output_parsers import StrOutputParser
     from langchain_core.prompts import ChatPromptTemplate
