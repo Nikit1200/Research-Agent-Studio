@@ -1,118 +1,50 @@
-from tools import web_search, scrape_url
-from dotenv import load_dotenv
+"""Groq-backed writer and critic chains for the research pipeline."""
+from __future__ import annotations
 import os
-
+from dotenv import load_dotenv
 load_dotenv()
-
-_llm = None
-_writer_chain = None
-_critic_chain = None
-
-# Keep the provider model configurable. The previous default,
-# `llama-3.3-70b-versatile`, is no longer available to this Groq account.
-DEFAULT_GROQ_MODEL = "qwen/qwen3.8-27b"
-# The free Groq on-demand tier for this account permits 1,000 output tokens per
-# minute. Keep each model turn deliberately small so a complete four-stage run
-# stays below that ceiling.
-DEFAULT_GROQ_MAX_TOKENS = 120
-
-
+DEFAULT_GROQ_MODEL = "openai/gpt-oss-20b"
+class GroqConfigurationError(RuntimeError): pass
+def _env_int(name: str, default: int) -> int:
+    try: return int(os.getenv(name, str(default)))
+    except ValueError: return default
 def get_llm():
-    global _llm
-    if _llm is None:
-        from langchain_groq import ChatGroq
-
-        _llm = ChatGroq(
-            model=os.getenv("GROQ_MODEL", DEFAULT_GROQ_MODEL),
-            temperature=0,
-            max_tokens=int(os.getenv("GROQ_MAX_TOKENS", DEFAULT_GROQ_MAX_TOKENS)),
-        )
-    return _llm
-
-
-def build_search_agent():
-    from langchain.agents import create_agent
-    from tools import get_search_tool
-
-    return create_agent(
-        model=get_llm(),
-        tools=[get_search_tool()],
-    )
-
-
-def build_reader_agent():
-    from langchain.agents import create_agent
-    from tools import get_scrape_tool
-
-    return create_agent(
-        model=get_llm(),
-        tools=[get_scrape_tool()],
-    )
-
-
+    key = os.getenv("GROQ_API_KEY", "").strip()
+    if not key: raise GroqConfigurationError("Groq API key missing. Add GROQ_API_KEY to .env.")
+    from langchain_groq import ChatGroq
+    return ChatGroq(model=os.getenv("GROQ_MODEL", DEFAULT_GROQ_MODEL), api_key=key, temperature=float(os.getenv("GROQ_TEMPERATURE", "0.2")), max_tokens=_env_int("GROQ_MAX_TOKENS", 700), timeout=_env_int("GROQ_TIMEOUT", 30), max_retries=0)
 def get_writer_chain():
-    global _writer_chain
-    if _writer_chain is None:
-        from langchain_core.prompts import ChatPromptTemplate
-        from langchain_core.output_parsers import StrOutputParser
-
-        writer_prompt = ChatPromptTemplate.from_messages([
-            (
-                "system",
-                "you are an expert research writer. Write clear, structured and insightful reports.",
-            ),
-            (
-                "human",
-                """Write a detailed research report on the topic below.
-    
-    Topic: {topic}
-    Research Gathered: {research}
-
-    Structure the report as:
-    -Introduction
-    -Key Findings (minimum 3 well- explained points)
-    -conclusion
-    -Sources (list all URLs found in the research),
-    Be detailed , factual and professional.""",
-            ),
-        ])
-
-        _writer_chain = writer_prompt | get_llm().bind(max_tokens=220) | StrOutputParser()
-    return _writer_chain
-
-
+    from langchain_core.output_parsers import StrOutputParser
+    from langchain_core.prompts import ChatPromptTemplate
+    prompt = ChatPromptTemplate.from_messages([("system", "You are a careful academic research writer. Use only supplied sources; never invent citations."), ("human", """Write a concise report about {topic} from the source evidence below.
+Required structure exactly:
+# Research Report
+## 1. Introduction
+## 2. Background
+## 3. Key Findings
+### Finding 1
+### Finding 2
+### Finding 3
+## 4. Advantages / Opportunities
+## 5. Challenges / Limitations
+## 6. Future Scope
+## 7. Conclusion
+## 8. References
+In References list only titles and URLs/DOIs in the supplied evidence. Qualify uncertainty.
+SOURCE EVIDENCE:\n{research}""")])
+    return prompt | get_llm() | StrOutputParser()
 def get_critic_chain():
-    global _critic_chain
-    if _critic_chain is None:
-        from langchain_core.prompts import ChatPromptTemplate
-        from langchain_core.output_parsers import StrOutputParser
-
-        critic_prompt = ChatPromptTemplate.from_messages([
-            (
-                "system",
-                "you are a sharp and constructive research critic. Be honest and specific.",
-            ),
-            (
-                "human",
-                """Review the research report below and evaluate it strictly.
-    
-    Report: {report}
-
-    Respond in this exact format:
-
-    Score: X/10
-    Strengths:
-    - ...
-    - ...
-
-    Areas to Improve:
-    - ...
-    - ...
-
-    One line verdict:
-    ...""",
-            ),
-        ])
-
-        _critic_chain = critic_prompt | get_llm().bind(max_tokens=100) | StrOutputParser()
-    return _critic_chain
+    from langchain_core.output_parsers import StrOutputParser
+    from langchain_core.prompts import ChatPromptTemplate
+    prompt = ChatPromptTemplate.from_messages([("system", "You are a strict research editor. Evaluate only the supplied report and sources."), ("human", """Review this report for factual consistency, source quality, completeness, clarity, logical structure, unsupported claims, and citation quality.
+Return exactly:
+Score: X/10
+Strengths:
+- ...
+Areas to Improve:
+- ...
+Citation Issues:
+- ...
+Verdict: ...
+REPORT:\n{report}""")])
+    return prompt | get_llm() | StrOutputParser()

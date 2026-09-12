@@ -17,7 +17,7 @@ from typing import Any
 
 import streamlit as st
 
-from pipeline import DailyGroqQuotaExceeded, run_research_pipeline
+from pipeline import PipelineStageError, run_research_pipeline
 
 
 st.set_page_config(
@@ -46,11 +46,11 @@ def extract_score(feedback: str) -> str:
     return match.group(1).replace(" ", "") if match else "Pending"
 
 
-def run_pipeline_with_log(topic: str) -> tuple[dict[str, Any], str, float]:
+def run_pipeline_with_log(topic: str, progress_callback: Any = None) -> tuple[dict[str, Any], str, float]:
     started = time.perf_counter()
     stream = io.StringIO()
     with contextlib.redirect_stdout(stream):
-        result = run_research_pipeline(topic)
+        result = run_research_pipeline(topic, progress=progress_callback)
     elapsed = time.perf_counter() - started
     return result, stream.getvalue(), elapsed
 
@@ -326,7 +326,10 @@ def render_result(topic: str, mode: str, result: dict[str, Any], log: str, elaps
             st.markdown(feedback or "_No critic feedback returned._")
 
     with tabs[2]:
-        st.text_area("Search evidence", value=search, height=420)
+        sources = result.get("sources", [])
+        if sources:
+            st.dataframe(sources, hide_index=True, key="research_sources")
+        st.text_area("Search evidence", value=search, height=320, key="search_evidence")
 
     with tabs[3]:
         st.text_area("Scraped content", value=scraped, height=420)
@@ -372,21 +375,25 @@ if submitted:
         st.warning("Enter a research topic before starting the pipeline.", icon=":material/warning:")
     else:
         with st.status("Running the multi-agent pipeline", expanded=True) as status:
-            st.write("Search agent is gathering source candidates.")
-            st.write("Reader agent will scrape the most relevant pages.")
-            st.write("Writer and critic chains will produce the final review.")
+            progress_slot = st.empty()
+            completed_stages: list[str] = []
+
+            def show_progress(stage: str, state: str, message: str) -> None:
+                if state == "complete" and stage not in completed_stages:
+                    completed_stages.append(stage)
+                lines = [f"✓ {item} completed" for item in completed_stages]
+                prefix = "❌" if state == "error" else "…"
+                lines.append(f"{prefix} {stage}: {message}")
+                progress_slot.markdown("  \n".join(lines))
+
             try:
-                result, log, elapsed = run_pipeline_with_log(topic)
-            except DailyGroqQuotaExceeded as exc:
-                status.update(label="Groq daily quota reached", state="error", expanded=True)
-                st.warning(
-                    "Groq's daily quota has been used. The pipeline has been optimized to use fewer tokens "
-                    "on future runs, but this account must wait for Groq's reset or use an upgraded plan.",
-                    icon=":material/timer:",
-                )
-            except Exception as exc:
-                status.update(label="Pipeline failed", state="error", expanded=True)
-                st.error(f"Pipeline failed: {exc}", icon=":material/error:")
+                result, log, elapsed = run_pipeline_with_log(topic, show_progress)
+            except PipelineStageError as exc:
+                status.update(label=f"{exc.stage} failed", state="error", expanded=True)
+                st.error(f"{exc.stage}: {exc}", icon=":material/error:")
+            except Exception:
+                status.update(label="Unexpected pipeline error", state="error", expanded=True)
+                st.error("An unexpected error occurred. Review the console log and try again.", icon=":material/error:")
             else:
                 status.update(label="Pipeline complete", state="complete", expanded=False)
                 st.session_state.latest_result = result
