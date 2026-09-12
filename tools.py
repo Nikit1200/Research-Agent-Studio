@@ -4,13 +4,14 @@ import html
 import logging
 import os
 from dataclasses import asdict, dataclass
+from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 import requests
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(dotenv_path=Path(__file__).with_name(".env"))
 LOGGER = logging.getLogger(__name__)
 REQUEST_TIMEOUT = (5, 15)
 
@@ -57,14 +58,7 @@ def _request_json(url: str, params: dict[str, Any] | None = None) -> dict[str, A
 
 def search_openalex(query: str) -> list[ResearchSource]:
     params: dict[str, Any] = {"search": query, "per-page": 4, "select": "title,authorships,publication_year,abstract_inverted_index,doi,primary_location,cited_by_count"}
-    if key := _config_value("OPENALEX_API_KEY"): params["api_key"] = key
-    try:
-        payload = _request_json("https://api.openalex.org/works", params)
-    except ResearchServiceError as exc:
-        if not any(f"HTTP {status}" in str(exc) for status in (400, 401, 403)) or "api_key" not in params:
-            raise
-        params.pop("api_key")
-        payload = _request_json("https://api.openalex.org/works", params)
+    payload = _request_json("https://api.openalex.org/works", params)
     sources = []
     for work in payload.get("results", []):
         inverted = work.get("abstract_inverted_index") or {}
